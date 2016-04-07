@@ -1,0 +1,45 @@
+!!python/object/new:dynamic_reconfigure.encoding.Config
+dictitems:
+  DelayGps_param: 0.2
+  MODE1: 0
+  MODE2: 1
+  MODE3: 4
+  MODE4: 0
+  MODE5: 3
+  MODE6: 1
+  WaccBias_param: 0.05
+  WxyGpsP_param: 1.0
+  WxyGpsV_param: 2.0
+  WxyResV_param: 0.5
+  groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+    dictitems:
+      DelayGps_param: 0.2
+      MODE1: 0
+      MODE2: 1
+      MODE3: 4
+      MODE4: 0
+      MODE5: 3
+      MODE6: 1
+      WaccBias_param: 0.05
+      WxyGpsP_param: 1.0
+      WxyGpsV_param: 2.0
+      WxyResV_param: 0.5
+      groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      id: 0
+      name: Default
+      parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      parent: 0
+      protectprop_param: 1.0
+      state: true
+      testnumsen_param: true
+      type: ''
+      yawAutoRate_param: 0.3
+      yawManualRate_param: 1.5
+    state: []
+  protectprop_param: 1.0
+  testnumsen_param: true
+  yawAutoRate_param: 0.3
+  yawManualRate_param: 1.5
+state: []
