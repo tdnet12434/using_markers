@@ -32,6 +32,7 @@
 #include "geometry_msgs/Pose.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
+#include "geometry_msgs/PointStamped.h"
 #include "nav_msgs/Odometry.h"
 #include "nav_msgs/Path.h"
 #include "sensor_msgs/Imu.h"
@@ -52,6 +53,7 @@
 sensor_msgs::Imu imu;
 sensor_msgs::LaserScan scan;
 geometry_msgs::PoseStamped p_goal, p_goalf;
+geometry_msgs::PointStamped gps_offset;
 geometry_msgs::PoseWithCovarianceStamped visual_val;
 nav_msgs::Odometry pose_gps;
 nav_msgs::Odometry pose_nav;
@@ -98,45 +100,51 @@ double roll, pitch, yaw;
 
 
 
-void imucallback(sensor_msgs::Imu data)
+void imucallback(const sensor_msgs::Imu::ConstPtr &data)
 {
-  imu = data;
+  // imu = *data;
+  imu = *data;
   tf::Quaternion q(imu.orientation.x, imu.orientation.y, imu.orientation.z, imu.orientation.w);
   tf::Matrix3x3 m(q);
   m.getRPY(roll, pitch, yaw);
   //ROS_INFO("ax:[%f]", yaw);
 }
-void pose_gps_callback(nav_msgs::Odometry data)
+void pose_gps_callback(const nav_msgs::Odometry::ConstPtr& data)
 {
-  pose_gps = data;
+  pose_gps = *data;
   // ROS_INFO("pz:[%f]", data.pose.pose.position.z);
 }
-void pose_nav_callback(nav_msgs::Odometry data)
+void pose_nav_callback(const nav_msgs::Odometry::ConstPtr& data)
 {
-  pose_nav = data;
+  pose_nav = *data;
   // ROS_INFO("pose_nav_pz:[%f]", data.pose.pose.position.z);
 }
-void pose_quad_callback(nav_msgs::Odometry data)
+void pose_quad_callback(const nav_msgs::Odometry::ConstPtr& data)
 {
-  pose_quad = data;
+  pose_quad = *data;
   // ROS_INFO("pose_nav_pz:[%f]", data.pose.pose.position.z);
 }
-void scancallback(sensor_msgs::LaserScan data)
+void scancallback(const sensor_msgs::LaserScan::ConstPtr& data)
 {
-  scan = data;
+  scan = *data;
 
   //ROS_INFO("sx:[%f]", data.ranges[256]);
 }
-void vel_des_callback(nav_msgs::Odometry data) {
-  veld_val = data;
+void vel_des_callback(const nav_msgs::Odometry::ConstPtr& data) {
+  veld_val = *data;
 }
-void visual_callback(geometry_msgs::PoseWithCovarianceStamped data) {
-  visual_val = data;
+void visual_callback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& data) {
+  visual_val = *data;
 }
-void state_out_callback(sensor_fusion_comm::DoubleArrayStamped data) {
+void state_out_callback(const sensor_fusion_comm::DoubleArrayStamped::ConstPtr& data) {
 
-  scale_msf = data.data[16];
+  scale_msf = data->data[16];
 }
+
+void gps_offset_callback(const geometry_msgs::PointStamped::ConstPtr& data) {
+  gps_offset = *data;
+}
+
 visualization_msgs::Marker makeBox( visualization_msgs::InteractiveMarker &msg )
 {
   visualization_msgs::Marker marker;
@@ -248,6 +256,8 @@ int main( int argc, char** argv )
   ros::Publisher  q_path_pub =      n.advertise<nav_msgs::Path>("quad_path", 1);
   ros::Subscriber visual_sub =      n.subscribe<geometry_msgs::PoseWithCovarianceStamped>("/imu_max/odom_pose_filtered", 2, visual_callback);
   ros::Subscriber state_out_msf_sub = n.subscribe<sensor_fusion_comm::DoubleArrayStamped>("/msf_core/state_out", 2, state_out_callback);
+  ros::Subscriber gps_offset_sub =  n.subscribe<geometry_msgs::PointStamped>("/imu_max/gps_offset", 2, gps_offset_callback);
+
   //test-----------------------------------------------------------------------
   interactive_markers::InteractiveMarkerServer server("GOAL_AND_HEADING_CONTROL");
   interactive_markers::InteractiveMarkerServer server2("INIT_FILTER");
@@ -353,6 +363,23 @@ int main( int argc, char** argv )
   marker.mesh_resource = "file:///home/intel/catkin_ws/src/using_markers/src/meshes/quadrotor_2.stl";
   marker.mesh_use_embedded_materials = 1;
 
+  visualization_msgs::Marker marker_home;
+  marker_home.header.frame_id = "/odom";
+  marker_home.ns = "gps_home";
+  marker_home.id = 0;
+  marker_home.scale.x = 0.2;
+  marker_home.scale.y = 0.2;
+  marker_home.scale.z = 0.01;
+  marker_home.color.r = 0.5f;
+  marker_home.color.g = 0.5f;
+  marker_home.color.b = 0.0f;
+  marker_home.color.a = 1.0;
+  marker_home.pose.orientation.x = 0;
+  marker_home.pose.orientation.y = 0;
+  marker_home.pose.orientation.z = 0;
+  marker_home.pose.orientation.w = 1;
+  marker_home.type = visualization_msgs::Marker::CUBE;
+
 
   visualization_msgs::Marker line_strip, line_strip2;
   line_strip.header.frame_id = "/odom";
@@ -457,15 +484,18 @@ int main( int argc, char** argv )
   {
     //ros::Subscriber imu_sub = n.subscribe<sensor_msgs::Imu>("imu_subscribe", 1000, imucallback);
 
+    ros::Time cur_time = ros::Time::now();
 
-
-    marker.header.stamp = ros::Time::now();
+    marker.header.stamp = cur_time;
     marker.action = visualization_msgs::Marker::ADD;
 
-    line_strip.header.stamp = ros::Time::now();
+    marker_home.header.stamp = cur_time;
+    marker_home.action = visualization_msgs::Marker::ADD;
+
+    line_strip.header.stamp = cur_time;
     line_strip.action = visualization_msgs::Marker::ADD;
 
-    line_strip2.header.stamp = ros::Time::now();
+    line_strip2.header.stamp = cur_time;
     line_strip2.action = visualization_msgs::Marker::ADD;
 
 
@@ -496,7 +526,7 @@ int main( int argc, char** argv )
       p2.z = pose_gps.pose.pose.position.z ;
 
 
-      //set the velocity arrow
+      ////////////////////set the velocity arrow/////////////////////
       float vx = veld_val.twist.twist.linear.x;
       float vy = veld_val.twist.twist.linear.y;
 
@@ -514,7 +544,7 @@ int main( int argc, char** argv )
       marker_pub.publish(vel_vec);
 
 
-      //set the velocity arrow
+      ////////////////////set the desired velocity arrow////////////
       vx = pose_nav.twist.twist.linear.x;
       vy = pose_nav.twist.twist.linear.y;
       ROS_INFO("x:[%f] y:[%f]", vx, vy);
@@ -536,11 +566,15 @@ int main( int argc, char** argv )
       marker_pub.publish(goal_box);
 
 
+
+
+
+      //////////////////////////TEXT ALL WE NEED STATUS//////////////////
       std::ostringstream strs;
-      strs << "FILTER : " << pose_nav.pose.pose.position.x << "\t" << pose_nav.pose.pose.position.y
+      strs << "FILTER : " << pose_nav.pose.pose.position.x << "\t" << pose_nav.pose.pose.position.y  << "\t" << pose_nav.pose.pose.position.z
            << "\nGPS    : " << pose_gps.pose.pose.position.x << "\t" << pose_gps.pose.pose.position.y
            << "\tHACC : " << pose_gps.pose.covariance[0]
-           << "\nVISUAL : " << visual_val.pose.pose.position.x << "\t" << visual_val.pose.pose.position.y
+           << "\nVISUAL : " << visual_val.pose.pose.position.x << "\t" << visual_val.pose.pose.position.y << "\tcov " << visual_val.pose.covariance[0]
            << "\nMSF_SCALE : " << scale_msf;
       std::string aaa = strs.str();
       nav_pose_text.text = aaa;
@@ -550,6 +584,16 @@ int main( int argc, char** argv )
 
       marker_pub.publish(nav_pose_text);
 
+      /////////////////////GPS OFFSET HOME NOW/////////////////////////
+      static ros::Time last_gps_offset_stamp = cur_time;  
+      if(gps_offset.header.stamp!=last_gps_offset_stamp) {   //only apply when new data come
+        last_gps_offset_stamp = gps_offset.header.stamp;
+        marker_home.pose.position = gps_offset.point;
+        marker_pub.publish(marker_home);
+      }
+
+
+      /////////////////////BUTTOM INIT FILTER/////////////////////////////
       if(!std::isfinite(scale_msf)) init_msf_filter();
       //button follow quad
       int_marker2.pose.position.x = pose_nav.pose.pose.position.x;
@@ -561,7 +605,7 @@ int main( int argc, char** argv )
       server2.clear();
       server2.insert(int_marker2, &buttonprocessFeedback2);
       server2.applyChanges();
-
+      ////////////////////////////////////////////////////////////////////
 
       ros::spinOnce();
       r.sleep();  // config at rate 10 hz
@@ -575,7 +619,7 @@ int main( int argc, char** argv )
       marker.pose.position.z = pose_quad.pose.pose.position.z ;
 
       //convert to rpy then + pi/2 for rotate that wrong direct model stl
-      tf::Quaternion q_hmt;
+      /*tf::Quaternion q_hmt;
       q_hmt[0] = imu.orientation.x;
       q_hmt[1] = imu.orientation.y;
       q_hmt[2] = imu.orientation.z;
@@ -588,7 +632,9 @@ int main( int argc, char** argv )
       marker.pose.orientation.x = q_[0];
       marker.pose.orientation.y = q_[1];
       marker.pose.orientation.z = q_[2];
-      marker.pose.orientation.w = q_[3];
+      marker.pose.orientation.w = q_[3];*/
+
+      marker.pose.orientation  = imu.orientation;
       // marker.pose.orientation.x = marker.pose.orientation.x*0.9+0.1*p_goal.orientation.x;
       // marker.pose.orientation.y = marker.pose.orientation.y*0.9+0.1*p_goal.orientation.y;
       // marker.pose.orientation.z = marker.pose.orientation.z*0.9+0.1*p_goal.orientation.z;
