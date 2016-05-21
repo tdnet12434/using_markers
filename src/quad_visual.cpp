@@ -207,11 +207,10 @@ void init_msf_filter() {
 void processFeedback(
   const visualization_msgs::InteractiveMarkerFeedbackConstPtr &feedback )
 {
-  p_goal.pose.position.x = feedback->pose.position.x;
-  p_goal.pose.position.y = feedback->pose.position.y;
-  p_goal.pose.position.z = feedback->pose.position.z;
+  p_goal.pose.position = feedback->pose.position;
 
-  tf::Quaternion q(feedback->pose.orientation.x, feedback->pose.orientation.y, feedback->pose.orientation.z, feedback->pose.orientation.w);
+
+  /*tf::Quaternion q(feedback->pose.orientation.x, feedback->pose.orientation.y, feedback->pose.orientation.z, feedback->pose.orientation.w);
   tf::Matrix3x3 m(q);
   m.getRPY(roll_, pitch_, yaw_ondemand);
   // p_goal.orientation.x = feedback->pose.orientation.x;
@@ -219,7 +218,9 @@ void processFeedback(
   // p_goal.orientation.z = feedback->pose.orientation.z;
   // p_goal.orientation.w = feedback->pose.orientation.w;
 
-  p_goal.pose.orientation.w = wrap_pi(yaw_ondemand - HALF_M_PI);
+  p_goal.pose.orientation.w = wrap_pi(yaw_ondemand - HALF_M_PI);*/
+
+  p_goal.pose.orientation = feedback->pose.orientation;
 
 
   //ROS_INFO("%f",p_goal.pose.position.x);
