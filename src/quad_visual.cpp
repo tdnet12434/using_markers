@@ -39,6 +39,7 @@
 #include "std_msgs/String.h"
 #include "sensor_msgs/LaserScan.h"
 #include "sensor_fusion_comm/DoubleArrayStamped.h"
+#include "beginner_tutorials/Status.h"
 //test-----------interactive control
 #include <interactive_markers/interactive_marker_server.h>
 #include <sstream>
@@ -53,13 +54,14 @@
 sensor_msgs::Imu imu;
 sensor_msgs::LaserScan scan;
 geometry_msgs::PoseStamped p_goal, p_goalf;
-geometry_msgs::PointStamped gps_offset;
 geometry_msgs::PoseWithCovarianceStamped visual_val;
 nav_msgs::Odometry pose_gps;
 nav_msgs::Odometry pose_nav;
 nav_msgs::Odometry pose_quad;
 nav_msgs::Odometry veld_val;
 nav_msgs::Path q_path;
+
+beginner_tutorials::Status status_val;
 // sensor_fusion_comm::DoubleArrayStamped state_out_msf;
 float scale_msf = 0;
 
@@ -141,8 +143,8 @@ void state_out_callback(const sensor_fusion_comm::DoubleArrayStamped::ConstPtr& 
   scale_msf = data->data[16];
 }
 
-void gps_offset_callback(const geometry_msgs::PointStamped::ConstPtr& data) {
-  gps_offset = *data;
+void status_callback(const beginner_tutorials::Status::ConstPtr& data) {
+  status_val = *data;
 }
 
 visualization_msgs::Marker makeBox( visualization_msgs::InteractiveMarker &msg )
@@ -257,7 +259,7 @@ int main( int argc, char** argv )
   ros::Publisher  q_path_pub =      n.advertise<nav_msgs::Path>("quad_path", 1);
   ros::Subscriber visual_sub =      n.subscribe<geometry_msgs::PoseWithCovarianceStamped>("/imu_max/odom_pose_filtered", 2, visual_callback);
   ros::Subscriber state_out_msf_sub = n.subscribe<sensor_fusion_comm::DoubleArrayStamped>("/msf_core/state_out", 2, state_out_callback);
-  ros::Subscriber gps_offset_sub =  n.subscribe<geometry_msgs::PointStamped>("/imu_max/gps_offset", 2, gps_offset_callback);
+  ros::Subscriber status_sub =      n.subscribe<beginner_tutorials::Status>("/imu_max/status", 2, status_callback);
 
   //test-----------------------------------------------------------------------
   interactive_markers::InteractiveMarkerServer server("GOAL_AND_HEADING_CONTROL");
@@ -576,7 +578,8 @@ int main( int argc, char** argv )
            << "\nGPS    : " << pose_gps.pose.pose.position.x << "\t" << pose_gps.pose.pose.position.y
            << "\tHACC : " << pose_gps.pose.covariance[0]
            << "\nVISUAL : " << visual_val.pose.pose.position.x << "\t" << visual_val.pose.pose.position.y << "\tcov " << visual_val.pose.covariance[0]
-           << "\nMSF_SCALE : " << scale_msf;
+           << "\nMSF_SCALE : " << scale_msf
+           << "\nGPS IN USE : " << (status_val.GPS_IN_USING ? "1":"0") << "\tVISION IN USE : " << (status_val.VISION_IN_USING ? "1":"0");
       std::string aaa = strs.str();
       nav_pose_text.text = aaa;
       nav_pose_text.pose.position.x = pose_nav.pose.pose.position.x;
@@ -586,10 +589,10 @@ int main( int argc, char** argv )
       marker_pub.publish(nav_pose_text);
 
       /////////////////////GPS OFFSET HOME NOW/////////////////////////
-      static ros::Time last_gps_offset_stamp = cur_time;  
-      if(gps_offset.header.stamp!=last_gps_offset_stamp) {   //only apply when new data come
-        last_gps_offset_stamp = gps_offset.header.stamp;
-        marker_home.pose.position = gps_offset.point;
+      static ros::Time last_status_stamp = cur_time;  
+      if(status_val.header.stamp!=last_status_stamp) {   //only apply when new data come
+        last_status_stamp = status_val.header.stamp;
+        marker_home.pose.position = status_val.GPS_OFFSET;
         marker_pub.publish(marker_home);
       }
 
