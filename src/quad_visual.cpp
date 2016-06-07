@@ -54,7 +54,7 @@
 sensor_msgs::Imu imu;
 sensor_msgs::LaserScan scan;
 geometry_msgs::PoseStamped p_goal, p_goalf;
-geometry_msgs::PoseWithCovarianceStamped visual_val;
+geometry_msgs::PoseWithCovarianceStamped visual_val,visual_val_scaled;
 nav_msgs::Odometry pose_gps;
 nav_msgs::Odometry pose_nav;
 nav_msgs::Odometry pose_quad;
@@ -137,6 +137,13 @@ void vel_des_callback(const nav_msgs::Odometry::ConstPtr& data) {
 }
 void visual_callback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& data) {
   visual_val = *data;
+  visual_val_scaled = visual_val;
+
+  visual_val_scaled.pose.pose.position.x/=scale_msf;
+  visual_val_scaled.pose.pose.position.y/=scale_msf;
+  visual_val_scaled.pose.pose.position.z/=scale_msf;
+  
+
 }
 void state_out_callback(const sensor_fusion_comm::DoubleArrayStamped::ConstPtr& data) {
 
@@ -260,6 +267,7 @@ int main( int argc, char** argv )
   ros::Subscriber visual_sub =      n.subscribe<geometry_msgs::PoseWithCovarianceStamped>("/imu_max/odom_pose_filtered", 2, visual_callback);
   ros::Subscriber state_out_msf_sub = n.subscribe<sensor_fusion_comm::DoubleArrayStamped>("/msf_core/state_out", 2, state_out_callback);
   ros::Subscriber status_sub =      n.subscribe<beginner_tutorials::Status>("/imu_max/status", 2, status_callback);
+  ros::Publisher odom_pub =         n.advertise<geometry_msgs::PoseWithCovarianceStamped>("/imu_max/slam_msf", 10);
 
   //test-----------------------------------------------------------------------
   interactive_markers::InteractiveMarkerServer server("GOAL_AND_HEADING_CONTROL");
@@ -529,7 +537,7 @@ int main( int argc, char** argv )
       p2.z = pose_gps.pose.pose.position.z ;
 
 
-      ////////////////////set the velocity arrow/////////////////////
+      ////////////////////set the desired velocity arrow/////////////////////
       float vx = veld_val.twist.twist.linear.x;
       float vy = veld_val.twist.twist.linear.y;
 
@@ -547,7 +555,7 @@ int main( int argc, char** argv )
       marker_pub.publish(vel_vec);
 
 
-      ////////////////////set the desired velocity arrow////////////
+      ////////////////////set the velocity arrow////////////
       vx = pose_nav.twist.twist.linear.x;
       vy = pose_nav.twist.twist.linear.y;
       ROS_INFO("x:[%f] y:[%f]", vx, vy);
@@ -610,7 +618,8 @@ int main( int argc, char** argv )
       server2.insert(int_marker2, &buttonprocessFeedback2);
       server2.applyChanges();
       ////////////////////////////////////////////////////////////////////
-
+      odom_pub.publish(visual_val_scaled);
+      
       ros::spinOnce();
       r.sleep();  // config at rate 10 hz
 
