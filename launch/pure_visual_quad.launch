@@ -1,0 +1,44 @@
+<launch>
+
+<!-- <node name="quad_talker" pkg="beginner_tutorials" type="talker.py" args="/dev/ttyACM0 115200 /dev/ttyUSB0 57600" output="screen"/> -->
+
+
+<!-- <node name="quad_talker" pkg="beginner_tutorials" type="thirdorder" args="/dev/ttyACM0 115200 0.0 " output="screen"/> -->
+
+
+<!-- <node name="PID_TUNE" pkg="using_markers" type="pid.py" output="screen" /> -->
+<!-- <node name="general_config" pkg="using_markers" type="quad_setting.py" output="screen" /> -->
+<!-- <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster2" args="0.0 0.0 0.0 0.0 0.0 0.0 world odom 100" /> -->
+
+
+
+<!-- <node name="gps_pose_vel_to_odom"  pkg="beginner_tutorials" type="odometry_pose.py" args="10 odom base_link"  output="screen" >
+	<remap from="/sub_pose" to="/imu_max/pose" />
+    <remap from="/sub_twist" to="/imu_max/Navvel" />
+	<remap from="/pub_odo" to="/imu_max/poseodo" />
+</node>
+ -->
+
+<!--_________________________________________________RVIZ_______________________________________________________________-->
+
+    <!-- To use rviz -->
+<!--     <node pkg="tf" type="static_transform_publisher" name="link4_broadcaster" args="0.0 0.0 0.1 0.0 0.0 0.0 base_link hokuyo 100" /> -->
+<!--     <node pkg="tf" type="static_transform_publisher" name="link5_broadcaster" args="0.0 0.0 0.0 0.0 0.0 0.0 base_link3 vel_des 100" /> -->
+          
+    <!-- output="screen" -->
+    <node name="quad_visual"  pkg="using_markers" type="quad_visual_px4" args="" output="screen" >
+        <!-- <remap from="imu_max/pose" to="imu_max/poseodo"/> -->
+        <!-- <remap from="imu_max/pose" to="imu_max/pose_nav"/> -->
+        <!-- <remap from="/msf_core/odometry" to="imu_max/poseodo"/> --> <!-- try -->
+        <!-- <remap from="/imu_max/pose_nav" to="msf_core/odometry"/> -->
+    </node>
+
+<node name="msf_show_covariace"  pkg="beginner_tutorials" type="pose_odometry.py" args="100 odom"  output="screen" >
+    <remap from="/sub_odo" to="/msf_core/odometry" />
+    <remap from="/pub_pose" to="/imu_max/poseEKF" />
+</node>
+
+
+
+
+</launch>
