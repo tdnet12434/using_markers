@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_fusion_comm
   interactive_markers
   dynamic_reconfigure
+  mavros_msgs
 )
 
 
@@ -126,6 +127,8 @@ include_directories(
 
 add_executable(quad_visual src/quad_visual.cpp)
 target_link_libraries(quad_visual ${catkin_LIBRARIES})
+add_executable(quad_visual_px4 src/quad_visual_mavros.cpp)
+target_link_libraries(quad_visual_px4 ${catkin_LIBRARIES})
 #add_executable(line_strip src/line_strip.cpp)
 #target_link_libraries(line_strip ${catkin_LIBRARIES})
 add_executable(using_markers src/using_markers.cpp)
