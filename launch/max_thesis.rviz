@@ -1,0 +1,253 @@
+Panels:
+  - Class: rviz/Displays
+    Help Height: 78
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /TF1/Frames1
+        - /TF1/Tree1
+      Splitter Ratio: 0.550186
+    Tree Height: 531
+  - Class: rviz/Selection
+    Name: Selection
+  - Class: rviz/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+  - Class: rviz/Time
+    Experimental: false
+    Name: Time
+    SyncMode: 0
+    SyncSource: ""
+  - Class: rviz_plugin_tutorials/Teleop
+    Name: Teleop
+    Topic: /cmd_vel
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz/Grid
+      Color: 160; 160; 164
+      Enabled: false
+      Line Style:
+        Line Width: 0.03
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 100
+      Reference Frame: <Fixed Frame>
+      Value: false
+    - Class: rviz/Axes
+      Enabled: true
+      Length: 1
+      Name: Axes
+      Radius: 0.01
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.1
+      Class: rviz/Pose
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.3
+      Head Radius: 0.1
+      Name: Pose
+      Shaft Length: 1
+      Shaft Radius: 0.05
+      Shape: Arrow
+      Topic: /move_base_simple/goal
+      Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: false
+      Show Axes: true
+      Show Names: true
+      Tree:
+        {}
+      Update Interval: 0.01
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualization_marker
+      Name: QUAD_VIS
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Angle Tolerance: 0.1
+      Class: rviz/Odometry
+      Color: 252; 255; 39
+      Enabled: false
+      Keep: 1000
+      Length: 0.1
+      Name: Odometry
+      Position Tolerance: 0.3
+      Topic: /msf_core/odometry
+      Value: false
+    - Class: rviz/InteractiveMarkers
+      Enable Transparency: false
+      Enabled: true
+      Name: INIT_FILTER
+      Show Axes: false
+      Show Descriptions: true
+      Show Visual Aids: true
+      Update Topic: /INIT_FILTER/update
+      Value: true
+    - Alpha: 1
+      Blocks: 4
+      Class: rviz_plugins/AerialMapDisplay
+      Draw Behind: true
+      Dynamically reload: true
+      Enabled: false
+      Frame Convention: XYZ -> ENU
+      Name: MAP
+      Object URI: http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}&s=Ga
+      Robot frame: state
+      Topic: /imu_max/state_fix
+      Value: false
+      Zoom: 20
+    - Alpha: 0.1
+      Class: rviz_plugin_covariance/PoseWithCovariance
+      Color: 0; 0; 255
+      Enabled: false
+      Name: GPS
+      Scale: 10
+      Topic: /imu_max/pose
+      Value: false
+    - Alpha: 0.3
+      Class: rviz_plugin_covariance/PoseWithCovariance
+      Color: 30; 204; 50
+      Enabled: false
+      Name: UKF
+      Scale: 5
+      Topic: /odometry/filtered_pose
+      Value: false
+    - Alpha: 0.5
+      Class: rviz_plugin_covariance/PoseWithCovariance
+      Color: 204; 18; 164
+      Enabled: true
+      Name: MSF
+      Scale: 5
+      Topic: /msf_core/pose_after_update
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1000
+      Class: rviz_plugin_odometry_to_path/OdometryToPathDisplay
+      Color: 255; 3; 3
+      Enabled: true
+      Line Style: Lines
+      Line Width: 0.5
+      Name: UKF_ODOM_PATH
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Topic: /odometry/filtered
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1000
+      Class: rviz_plugin_odometry_to_path/OdometryToPathDisplay
+      Color: 55; 255; 205
+      Enabled: false
+      Line Style: Lines
+      Line Width: 0.5
+      Name: INAV_ODOM_PATH
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Topic: /imu_max/Inertial_nav_odom
+      Value: false
+    - Angle Tolerance: 0.3
+      Class: rviz_plugin_odometry_covariance/OdometryCovariance
+      Color: 255; 25; 0
+      Enabled: false
+      Keep: 100
+      Length: 1
+      Name: COVARIANCE_MOVE
+      Position Tolerance: 0.3
+      Topic: /msf_core/odometry
+      Value: false
+  Enabled: true
+  Global Options:
+    Background Color: 255; 255; 255
+    Fixed Frame: odom
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+      Hide Inactive Objects: true
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+    - Class: rviz/SetInitialPose
+      Topic: /initialpose
+    - Class: rviz/SetGoal
+      Topic: /move_base_simple/goal
+    - Class: rviz/PublishPoint
+      Single click: true
+      Topic: /clicked_point
+  Value: true
+  Views:
+    Current:
+      Angle: 0
+      Class: rviz/TopDownOrtho
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.06
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Name: Current View
+      Near Clip Distance: 0.01
+      Scale: 15.3547
+      Target Frame: base_link3
+      Value: TopDownOrtho (rviz)
+      X: 9.24399
+      Y: -16.1218
+    Saved:
+      - Angle: -0.035
+        Class: rviz/TopDownOrtho
+        Enable Stereo Rendering:
+          Stereo Eye Separation: 0.06
+          Stereo Focal Distance: 1
+          Swap Stereo Eyes: false
+          Value: false
+        Name: TopDownOrtho
+        Near Clip Distance: 0.01
+        Scale: 75.5372
+        Target Frame: base_link3
+        Value: TopDownOrtho (rviz)
+        X: 0.232887
+        Y: -0.375376
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 744
+  Hide Left Dock: false
+  Hide Right Dock: false
+  QMainWindow State: 000000ff00000000fd000000040000000000000122000002a2fc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006400fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c0061007900730100000028000002a2000000dd00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00540065006c0065006f00700000000224000000a60000004900ffffff0000000100000111000002a2fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a005600690065007700730100000028000002a2000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000025f0000003efc0100000002fb0000000800540069006d0065020000004100000276000002fe00000043fb0000000800540069006d00650100000000000004500000000000000000000002d6000002a200000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Selection:
+    collapsed: false
+  Teleop:
+    collapsed: false
+  Time:
+    collapsed: false
+  Views:
+    collapsed: false
+  Width: 1301
+  X: 65
+  Y: 24
