@@ -33,7 +33,7 @@
         <!-- <remap from="/imu_max/pose_nav" to="msf_core/odometry"/> -->
     </node>
 
-<node name="msf_show_covariace"  pkg="beginner_tutorials" type="pose_odometry.py" args="100 odom"  output="screen" >
+<node name="msf_show_covariace"  pkg="beginner_tutorials" type="pose_odometry.py" args="20 odom"  output="screen" >
     <remap from="/sub_odo" to="/msf_core/odometry" />
     <remap from="/pub_pose" to="/imu_max/poseEKF" />
 </node>

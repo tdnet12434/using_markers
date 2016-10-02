@@ -284,7 +284,7 @@ int main( int argc, char** argv )
   // create a grey box marker
   visualization_msgs::Marker box_marker;
   box_marker.type = visualization_msgs::Marker::MESH_RESOURCE;
-  box_marker.mesh_resource = "file:///home/intel/catkin_ws/src/using_markers/src/meshes/quadrotor_2.stl";
+  box_marker.mesh_resource = "package://using_markers/src/meshes/quadrotor_2.stl";
   box_marker.mesh_use_embedded_materials = 1;
 
   box_marker.scale.x = 0.3;
@@ -375,7 +375,7 @@ int main( int argc, char** argv )
   marker.pose.orientation.z = 0;
   marker.pose.orientation.w = 1;
   marker.type = visualization_msgs::Marker::MESH_RESOURCE;
-  marker.mesh_resource = "file:///home/fx/Dropbox/catkin_ws/src/using_markers/src/meshes/quadrotor_2.stl";
+  marker.mesh_resource = "package://using_markers/src/meshes/quadrotor_2.stl";
   marker.mesh_use_embedded_materials = 1;
 
   visualization_msgs::Marker home_marker;
