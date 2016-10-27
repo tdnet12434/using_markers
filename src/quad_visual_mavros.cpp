@@ -65,8 +65,61 @@ nav_msgs::Path q_path;
 
 beginner_tutorials::Status status_val;
 // sensor_fusion_comm::DoubleArrayStamped state_out_msf;
-float scale_msf = 0;
+enum {
+  px=0,
+  py,
+  pz,
+  vx,
+  vy,
+  vz,
+  q0,
+  q1,
+  q2,
+  q3,
+  b_wx,
+  b_wy,
+  b_wz,
+  b_ax,
+  b_ay,
+  b_az,
+  L,
+  qwv0,
+  qwv1,
+  qwv2,
+  qwv3,
+  pwvx,
+  pwvy,
+  pwvz,
+  qic0,
+  qic1,
+  qic2,
+  qic3,
+  picx,
+  picy,
+  picz,
+  pipx,
+  pipy,
+  pipz,
+  bp,
+  sizestate
+};
 
+// 0 1 2 //p
+// 3 4 5 //v
+// 6 7 8 9 //q
+// 10 11 12 //b_w
+// 13 14 15 //b_a
+// 16  //L
+// 17 18 19 20 //q_wv
+// 21 22 23 //p_wv
+// 24 25 26 27 //q_ic
+// 28 29 30 //p_ic
+// 31 32 33 //p_ip
+// 34 //b_p
+sensor_fusion_comm::DoubleArrayStamped state_msf;
+
+float scale_msf = 0;
+float pwv_msf[3];
 
 float vx_ef = 0, vy_ef = 0;
 
@@ -141,15 +194,20 @@ void visual_callback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& d
   visual_val = *data;
   visual_val_scaled = visual_val;
 
-  visual_val_scaled.pose.pose.position.x/=scale_msf;
-  visual_val_scaled.pose.pose.position.y/=scale_msf;
-  visual_val_scaled.pose.pose.position.z/=scale_msf;
+  visual_val_scaled.pose.pose.position.x=visual_val_scaled.pose.pose.position.x/scale_msf+pwv_msf[0];
+  visual_val_scaled.pose.pose.position.y=visual_val_scaled.pose.pose.position.y/scale_msf+pwv_msf[1];
+  visual_val_scaled.pose.pose.position.z=visual_val_scaled.pose.pose.position.z/scale_msf+pwv_msf[2];
   
 
 }
 void state_out_callback(const sensor_fusion_comm::DoubleArrayStamped::ConstPtr& data) {
-
-  scale_msf = data->data[16];
+  static bool initvar=false;
+  if(!initvar) { initvar=true;state_msf.data.resize(sizestate);}
+  state_msf.data = data->data;
+  scale_msf = state_msf.data[L];
+  pwv_msf[0] = state_msf.data[pwvx];
+  pwv_msf[1] = state_msf.data[pwvy];
+  pwv_msf[2] = state_msf.data[pwvz];
 }
 
 void status_callback(const beginner_tutorials::Status::ConstPtr& data) {
