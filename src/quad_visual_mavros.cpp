@@ -56,7 +56,7 @@
 sensor_msgs::Imu imu;
 sensor_msgs::LaserScan scan;
 geometry_msgs::PoseStamped p_goal, p_goalf;
-geometry_msgs::PoseWithCovarianceStamped visual_val,visual_val_scaled;
+geometry_msgs::PoseWithCovarianceStamped visual_val,vision_before_correction, gps_before_correction;
 nav_msgs::Odometry pose_gps;
 nav_msgs::Odometry pose_nav;
 nav_msgs::Odometry pose_quad;
@@ -170,6 +170,11 @@ void pose_gps_callback(const nav_msgs::Odometry::ConstPtr& data)
 {
   pose_gps = *data;
   // ROS_INFO("pz:[%f]", data.pose.pose.position.z);
+  gps_before_correction.header = pose_gps.header;
+  gps_before_correction.pose.pose.position.x = pose_gps.pose.pose.position.x + status_val.GPS_OFFSET.x;
+  gps_before_correction.pose.pose.position.y = pose_gps.pose.pose.position.y + status_val.GPS_OFFSET.y;
+  gps_before_correction.pose.pose.orientation = imu.orientation;
+  gps_before_correction.pose.covariance=pose_gps.pose.covariance;
 }
 void pose_nav_callback(const nav_msgs::Odometry::ConstPtr& data)
 {
@@ -192,11 +197,11 @@ void vel_des_callback(const mavros_msgs::PositionTarget::ConstPtr& data) {
 }
 void visual_callback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& data) {
   visual_val = *data;
-  visual_val_scaled = visual_val;
+  vision_before_correction = visual_val;
 
-  visual_val_scaled.pose.pose.position.x=visual_val_scaled.pose.pose.position.x/scale_msf+pwv_msf[0];
-  visual_val_scaled.pose.pose.position.y=visual_val_scaled.pose.pose.position.y/scale_msf+pwv_msf[1];
-  visual_val_scaled.pose.pose.position.z=visual_val_scaled.pose.pose.position.z/scale_msf+pwv_msf[2];
+  vision_before_correction.pose.pose.position.x=vision_before_correction.pose.pose.position.x/scale_msf+pwv_msf[0];
+  vision_before_correction.pose.pose.position.y=vision_before_correction.pose.pose.position.y/scale_msf+pwv_msf[1];
+  vision_before_correction.pose.pose.position.z=vision_before_correction.pose.pose.position.z/scale_msf+pwv_msf[2];
   
 
 }
@@ -329,8 +334,8 @@ int main( int argc, char** argv )
   ros::Subscriber visual_sub =      n.subscribe<geometry_msgs::PoseWithCovarianceStamped>("/imu_max/odom_pose_filtered", 2, visual_callback);
   ros::Subscriber state_out_msf_sub = n.subscribe<sensor_fusion_comm::DoubleArrayStamped>("/msf_core/state_out", 2, state_out_callback);
   ros::Subscriber status_sub =      n.subscribe<beginner_tutorials::Status>("/imu_max/status", 2, status_callback);
-  ros::Publisher odom_pub =         n.advertise<geometry_msgs::PoseWithCovarianceStamped>("/imu_max/slam_msf", 10);
-
+  ros::Publisher odom_pub =         n.advertise<geometry_msgs::PoseWithCovarianceStamped>("/imu_max/vision_before_correction", 10);
+  ros::Publisher  gps_before_correction_pub = n.advertise<geometry_msgs::PoseWithCovarianceStamped>("/imu_max/gps_before_correction", 10);
   //test-----------------------------------------------------------------------
   interactive_markers::InteractiveMarkerServer server("GOAL_AND_HEADING_CONTROL");
   interactive_markers::InteractiveMarkerServer server2("INIT_FILTER");
@@ -771,8 +776,8 @@ int main( int argc, char** argv )
       server2.insert(int_marker2, &buttonprocessFeedback2);
       server2.applyChanges();
       ////////////////////////////////////////////////////////////////////
-      odom_pub.publish(visual_val_scaled);
-      
+      odom_pub.publish(vision_before_correction);
+      gps_before_correction_pub.publish(gps_before_correction);
       ros::spinOnce();
       r.sleep();  // config at rate 10 hz
 

@@ -1,0 +1,6 @@
+<launch>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find using_markers)/launch/max_thesis.rviz" />
+
+
+</launch>

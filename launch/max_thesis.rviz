@@ -164,7 +164,7 @@ Visualization Manager:
       Enabled: true
       Name: GPS
       Scale: 10
-      Topic: /imu_max/pose
+      Topic: /imu_max/gps_before_correction
       Value: true
     - Alpha: 0.3
       Class: rviz_plugin_covariance/PoseWithCovariance
@@ -172,7 +172,7 @@ Visualization Manager:
       Enabled: true
       Name: SLAM
       Scale: 5
-      Topic: /imu_max/slam_msf
+      Topic: /imu_max/vision_before_correction
       Value: true
     - Alpha: 0.5
       Class: rviz_plugin_covariance/PoseWithCovariance
@@ -186,7 +186,7 @@ Visualization Manager:
       Buffer Length: 1000
       Class: rviz_plugin_odometry_to_path/OdometryToPathDisplay
       Color: 255; 3; 3
-      Enabled: true
+      Enabled: false
       Line Style: Lines
       Line Width: 0.5
       Name: UKF_ODOM_PATH
@@ -195,7 +195,7 @@ Visualization Manager:
         Y: 0
         Z: 0
       Topic: /odometry/filtered
-      Value: true
+      Value: false
     - Alpha: 1
       Buffer Length: 1000
       Class: rviz_plugin_odometry_to_path/OdometryToPathDisplay
@@ -290,7 +290,7 @@ Visualization Manager:
         Value: false
       Name: Current View
       Near Clip Distance: 0.01
-      Scale: 29.3482
+      Scale: 55.9584
       Target Frame: state
       Value: TopDownOrtho (rviz)
       X: 0
