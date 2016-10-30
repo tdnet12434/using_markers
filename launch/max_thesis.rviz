@@ -4,6 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /Grid1
         - /TF1/Frames1
         - /TF1/Tree1
       Splitter Ratio: 0.550186
@@ -26,11 +27,11 @@ Panels:
 Visualization Manager:
   Class: ""
   Displays:
-    - Alpha: 0.5
+    - Alpha: 0.1
       Cell Size: 1
       Class: rviz/Grid
       Color: 160; 160; 164
-      Enabled: false
+      Enabled: true
       Line Style:
         Line Width: 0.03
         Value: Lines
@@ -43,7 +44,7 @@ Visualization Manager:
       Plane: XY
       Plane Cell Count: 100
       Reference Frame: <Fixed Frame>
-      Value: false
+      Value: true
     - Class: rviz/Axes
       Enabled: true
       Length: 1
@@ -281,7 +282,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: -0.005
+      Angle: -0.03
       Class: rviz/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
@@ -290,11 +291,11 @@ Visualization Manager:
         Value: false
       Name: Current View
       Near Clip Distance: 0.01
-      Scale: 55.9584
+      Scale: 62.9974
       Target Frame: state
       Value: TopDownOrtho (rviz)
-      X: 0
-      Y: 0
+      X: 1.18381
+      Y: 0.464597
     Saved:
       - Angle: -0.035
         Class: rviz/TopDownOrtho

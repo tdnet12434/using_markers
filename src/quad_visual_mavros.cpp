@@ -226,7 +226,7 @@ visualization_msgs::Marker makeBox( visualization_msgs::InteractiveMarker &msg )
   marker.type = visualization_msgs::Marker::CUBE;
   marker.scale.x = msg.scale * 0.35;
   marker.scale.y = msg.scale * 0.35;
-  marker.scale.z = msg.scale * 0.35;
+  marker.scale.z = msg.scale * 5;
   marker.color.r = 0.5;
   marker.color.g = 0.5;
   marker.color.b = 0.5;
@@ -385,7 +385,7 @@ int main( int argc, char** argv )
   // server.insert(int_marker, &processFeedback);
 
   tf::Vector3 position;
-  position = tf::Vector3( 0, -2, 0);
+  position = tf::Vector3( 0, -2, 5);
   visualization_msgs::InteractiveMarker int_marker2;
   int_marker2.header.frame_id = "odom";
   tf::pointTFToMsg(position, int_marker2.pose.position);
