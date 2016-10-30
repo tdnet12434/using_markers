@@ -598,8 +598,16 @@ int main( int argc, char** argv )
 
 
     
-
-
+    //CHECK offset path when gps offset is change
+    static bool change_offset_nav=false; 
+    static bool change_offset_gps=false; 
+    static beginner_tutorials::Status old_offset=status_val;
+    if(old_offset.GPS_OFFSET.x!=status_val.GPS_OFFSET.x || 
+       old_offset.GPS_OFFSET.y!=status_val.GPS_OFFSET.y ) {
+      change_offset_nav=true;
+      change_offset_gps=true;
+      old_offset = status_val;
+    }
 
     geometry_msgs::Point p, p2;
     for (uint32_t i = 0; i < 1000; ++i)
@@ -622,6 +630,18 @@ int main( int argc, char** argv )
         p.x = pose_nav.pose.pose.position.x ;  //cm to m
         p.y = pose_nav.pose.pose.position.y ;
         p.z = pose_nav.pose.pose.position.z ;
+
+
+        if(change_offset_nav) {
+          for (int i =0;i<nav_path.points.size() - 1 ;i++) {
+            nav_path.points[i].x+= status_val.GPS_OFFSET.x;
+            nav_path.points[i].y+= status_val.GPS_OFFSET.y;
+          }
+          change_offset_nav=false;
+        }
+
+
+
         nav_path.points.push_back(p);
         if(i_p > 1000) { i_p = 0; nav_path.points.clear();}
 
@@ -651,6 +671,14 @@ int main( int argc, char** argv )
         p2.x = pose_gps.pose.pose.position.x ;  //cm to m
         p2.y = pose_gps.pose.pose.position.y ;
         p2.z = pose_gps.pose.pose.position.z ;
+        if(change_offset_gps) {
+          for (int i =0;i<gps_path.points.size() - 1 ;i++) {
+            gps_path.points[i].x+= status_val.GPS_OFFSET.x;
+            gps_path.points[i].y+= status_val.GPS_OFFSET.y;
+          }
+          change_offset_gps=false;
+        }
+
         gps_path.points.push_back(p2);
         if(i_p2 > 1000) { i_p2 = 0; gps_path.points.clear();}
       }
@@ -674,6 +702,8 @@ int main( int argc, char** argv )
       q_path_input.pose.position.x = pose_nav.pose.pose.position.x;
       q_path_input.pose.position.y = pose_nav.pose.pose.position.y;
       q_path_input.pose.position.z = pose_nav.pose.pose.position.z;
+
+
 
       q_path.poses.push_back(q_path_input);
 
@@ -743,7 +773,7 @@ int main( int argc, char** argv )
       strs << "FILTER : " << pose_nav.pose.pose.position.x << "\t" << pose_nav.pose.pose.position.y  << "\t" << pose_nav.pose.pose.position.z
            << "\nGPS    : " << pose_gps.pose.pose.position.x << "\t" << pose_gps.pose.pose.position.y
            << "\tHACC : " << pose_gps.pose.covariance[0]
-           << "\nVISUAL : " << visual_val.pose.pose.position.x << "\t" << visual_val.pose.pose.position.y << "\tcov " << visual_val.pose.covariance[0]
+           << "\nVISUAL : " << vision_before_correction.pose.pose.position.x << "\t" << vision_before_correction.pose.pose.position.y << "\tcov " << visual_val.pose.covariance[0]
            << "\nMSF_SCALE : " << scale_msf
            << "\nGPS IN USE : " << (status_val.GPS_IN_USING ? "1":"0") << "\tVISION IN USE : " << (status_val.VISION_IN_USING ? "1":"0");
       std::string aaa = strs.str();
