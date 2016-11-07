@@ -548,7 +548,7 @@ int main( int argc, char** argv )
   nav_pose_text.scale.z = 0.5;
   nav_pose_text.color.r = 0.0f;
   nav_pose_text.color.g = 0.0f;
-  nav_pose_text.color.b = 1.0f;
+  nav_pose_text.color.b = 0.0f;
   nav_pose_text.color.a = 1.0;
   nav_pose_text.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
 
@@ -625,7 +625,7 @@ int main( int argc, char** argv )
         if(change_offset_nav) {
           int lenght = nav_path.points.size()- 1;
           for (int i =0;i < lenght;i++) {
-            float alpha = (i/lenght);
+            float alpha = (2*i/lenght);
             float beta = 1-alpha;
             nav_path.points[i].x+= (status_val.GPS_OFFSET.x)*beta;
             nav_path.points[i].y+= (status_val.GPS_OFFSET.y)*beta;
@@ -667,7 +667,7 @@ int main( int argc, char** argv )
         if(change_offset_gps) {
           int lenght = gps_path.points.size()- 1;
           for (int i =0;i<lenght ;i++) {
-            float alpha = (i/lenght);
+            float alpha = (2*i/lenght);
             float beta = 1-alpha;
             gps_path.points[i].x+= (status_val.GPS_OFFSET.x)*beta;
             gps_path.points[i].y+= (status_val.GPS_OFFSET.y)*beta;
@@ -766,10 +766,15 @@ int main( int argc, char** argv )
 
       //////////////////////////TEXT ALL WE NEED STATUS//////////////////
       std::ostringstream strs;
-      strs << "FILTER : " << pose_nav.pose.pose.position.x << "\t" << pose_nav.pose.pose.position.y  << "\t" << pose_nav.pose.pose.position.z
+      strs << "FILTER : " << pose_nav.pose.pose.position.x << "\t" 
+                          << pose_nav.pose.pose.position.y  << "\t" 
+                          << pose_nav.pose.pose.position.z
            << "\nGPS    : " << pose_gps.pose.pose.position.x << "\t" << pose_gps.pose.pose.position.y
            << "\tHACC : " << pose_gps.pose.covariance[0]
-           << "\nVISUAL : " << vision_before_correction.pose.pose.position.x << "\t" << vision_before_correction.pose.pose.position.y << "\tcov " << visual_val.pose.covariance[0]
+           << "\nVISUAL : " << vision_before_correction.pose.pose.position.x << "\t"
+                            << vision_before_correction.pose.pose.position.y << "\t" 
+                            << vision_before_correction.pose.pose.position.z << "\tcov " 
+                            << visual_val.pose.covariance[0]
            << "\nMSF_SCALE : " << scale_msf
            << "\nGPS IN USE : " << (status_val.GPS_IN_USING ? "1":"0") << "\tVISION IN USE : " << (status_val.VISION_IN_USING ? "1":"0");
       std::string aaa = strs.str();
