@@ -624,9 +624,9 @@ int main( int argc, char** argv )
 
         if(change_offset_nav) {
           int lenght = nav_path.points.size()- 1;
-          for (int i =0;i < lenght;i++) {
-            float alpha = (2*i/lenght);
-            float beta = 1-alpha;
+          for (int i =0; i < lenght;i++) {
+            float alpha = (float(i)/lenght);
+            float beta = 1.00-alpha;
             nav_path.points[i].x+= (status_val.GPS_OFFSET.x)*beta;
             nav_path.points[i].y+= (status_val.GPS_OFFSET.y)*beta;
           }
@@ -667,7 +667,7 @@ int main( int argc, char** argv )
         if(change_offset_gps) {
           int lenght = gps_path.points.size()- 1;
           for (int i =0;i<lenght ;i++) {
-            float alpha = (2*i/lenght);
+            float alpha = (float(i)/lenght);
             float beta = 1-alpha;
             gps_path.points[i].x+= (status_val.GPS_OFFSET.x)*beta;
             gps_path.points[i].y+= (status_val.GPS_OFFSET.y)*beta;
