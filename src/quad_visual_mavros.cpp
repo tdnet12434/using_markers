@@ -587,17 +587,6 @@ int main( int argc, char** argv )
     //int_marker.action = visualization_msgs::Marker::ADD;
 
 
-    
-    //CHECK offset path when gps offset is change
-    static bool change_offset_nav=false; 
-    static bool change_offset_gps=false; 
-    static beginner_tutorials::Status old_offset=status_val;
-    if(old_offset.GPS_OFFSET.x!=status_val.GPS_OFFSET.x || 
-       old_offset.GPS_OFFSET.y!=status_val.GPS_OFFSET.y ) {
-      change_offset_nav=true;
-      change_offset_gps=true;
-      old_offset = status_val;
-    }
 
     geometry_msgs::Point p, p2;
     for (uint32_t i = 0; i < 1000; ++i)
@@ -607,6 +596,35 @@ int main( int argc, char** argv )
       
       static int i_p = 0;
       static int i_p2= 0;
+
+
+
+
+    
+      //CHECK offset path when gps offset is change
+      //TODO use changed offset instead direct offset to addition 
+      static bool change_offset_nav=false; 
+      static bool change_offset_gps=false; 
+      static float prev_off_x=status_val.GPS_OFFSET.x;
+      static float prev_off_y=status_val.GPS_OFFSET.y;
+      static int aut = i_p;
+      static int aut2 = i_p2;
+      static int last_point_off = 0;
+      static int last_point_off2 = 0;
+      static bool save_aut=true;
+
+
+
+      static beginner_tutorials::Status old_offset=status_val;
+      if(old_offset.GPS_OFFSET.x!=status_val.GPS_OFFSET.x || 
+         old_offset.GPS_OFFSET.y!=status_val.GPS_OFFSET.y ) {
+        change_offset_nav=true;
+        change_offset_gps=true;
+        prev_off_x = old_offset.GPS_OFFSET.x;
+        prev_off_y = old_offset.GPS_OFFSET.y;
+        old_offset = status_val;
+      }
+
 
       if(dist(p.x - pose_nav.pose.pose.position.x,
               p.y - pose_nav.pose.pose.position.y) 
@@ -623,14 +641,39 @@ int main( int argc, char** argv )
 
 
         if(change_offset_nav) {
-          int lenght = nav_path.points.size()- 1;
-          for (int i =0; i < lenght;i++) {
-            float alpha = (float(i)/lenght);
+          int cur = nav_path.points.size()- 1;
+          
+
+          // for (int i =last_point_off; i < aut;i++) {
+          //   nav_path.points[i].x+= (status_val.GPS_OFFSET.x-prev_off_x);
+          //   nav_path.points[i].y+= (status_val.GPS_OFFSET.y-prev_off_y);
+          //   printf("%.2f\n", (status_val.GPS_OFFSET.x-prev_off_x));
+          // }
+          // printf("dynamic\n");
+          // for (int i =aut; i < cur;i++) {
+          //   float alpha = (float(i-aut)/(cur-aut));
+          //   float beta = 1.00-alpha;
+          //   nav_path.points[i].x+= (status_val.GPS_OFFSET.x-prev_off_x)*beta;
+          //   nav_path.points[i].y+= (status_val.GPS_OFFSET.y-prev_off_y)*beta;
+
+          //   printf("%.2f\n", (status_val.GPS_OFFSET.x-prev_off_x)*beta);
+          // }
+          for (int i =last_point_off; i < cur;i++) {
+            float alpha = (float(i-last_point_off)/(cur-last_point_off));
             float beta = 1.00-alpha;
-            nav_path.points[i].x+= (status_val.GPS_OFFSET.x)*beta;
-            nav_path.points[i].y+= (status_val.GPS_OFFSET.y)*beta;
+            nav_path.points[i].x+= (status_val.GPS_OFFSET.x-prev_off_x)*beta;
+            nav_path.points[i].y+= (status_val.GPS_OFFSET.y-prev_off_y)*beta;
           }
+          printf("nav offset from %d to %d and aut %d to %d size %d\n"
+                                                          , last_point_off
+                                                          , aut-1
+                                                          , aut
+                                                          , cur
+                                                          , cur-aut);
+          last_point_off = i_p;
           change_offset_nav=false;
+          save_aut=true;
+          
         }
 
 
@@ -665,13 +708,34 @@ int main( int argc, char** argv )
         p2.y = pose_gps.pose.pose.position.y ;
         p2.z = pose_gps.pose.pose.position.z ;
         if(change_offset_gps) {
-          int lenght = gps_path.points.size()- 1;
-          for (int i =0;i<lenght ;i++) {
-            float alpha = (float(i)/lenght);
+          int cur = gps_path.points.size()- 1;
+
+          // for (int i =last_point_off2;i<aut2 ;i++) {
+          //   gps_path.points[i].x+= (status_val.GPS_OFFSET.x-prev_off_x);
+          //   gps_path.points[i].y+= (status_val.GPS_OFFSET.y-prev_off_y);
+          // }
+
+          // for (int i =aut2;i<cur ;i++) {
+          //   float alpha = (float(i-aut2)/(cur-aut2));
+          //   float beta = 1-alpha;
+          //   gps_path.points[i].x+= (status_val.GPS_OFFSET.x-prev_off_x)*beta;
+          //   gps_path.points[i].y+= (status_val.GPS_OFFSET.y-prev_off_y)*beta;
+          // }
+
+          for (int i =last_point_off2;i<cur ;i++) {
+            float alpha = (float(i-last_point_off2)/(cur-last_point_off2));
             float beta = 1-alpha;
-            gps_path.points[i].x+= (status_val.GPS_OFFSET.x)*beta;
-            gps_path.points[i].y+= (status_val.GPS_OFFSET.y)*beta;
+            gps_path.points[i].x+= (status_val.GPS_OFFSET.x-prev_off_x)*beta;
+            gps_path.points[i].y+= (status_val.GPS_OFFSET.y-prev_off_y)*beta;
           }
+
+          printf("gps offset from %d to %d and aut %d to %d size %d\n"
+                                                          , last_point_off2
+                                                          , aut2-1
+                                                          , aut2
+                                                          , cur
+                                                          , cur-aut2);
+          last_point_off2 = i_p2;
           change_offset_gps=false;
         }
 
@@ -679,7 +743,17 @@ int main( int argc, char** argv )
         if(i_p2 > 1000) { i_p2 = 0; gps_path.points.clear();}
       }
 
+
+
       marker_pub.publish(gps_path);
+
+
+     if(status_val.GPS_IN_USING == 0 && status_val.VISION_IN_USING == 1 && save_aut) {
+        printf("save aut!!\n");
+        save_aut = false;
+        aut = i_p;
+        aut2 = i_p2;
+      }
 
       marker.pose.position.x = pose_quad.pose.pose.position.x ;
       marker.pose.position.y = pose_quad.pose.pose.position.y ;

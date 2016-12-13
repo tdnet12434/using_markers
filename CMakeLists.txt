@@ -134,7 +134,8 @@ target_link_libraries(quad_visual_px4 ${catkin_LIBRARIES})
 add_executable(using_markers src/using_markers.cpp)
 target_link_libraries(using_markers ${catkin_LIBRARIES})
 
-
+add_executable(test_clound src/test_clound.cpp)
+target_link_libraries(test_clound ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
