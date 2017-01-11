@@ -37,6 +37,16 @@
     <remap from="/sub_odo" to="/msf_core/odometry" />
     <remap from="/pub_pose" to="/imu_max/poseEKF" />
 </node>
+    <node pkg="tf" type="static_transform_publisher" name="odom_to_world" args="0.0 0.0 0.0 0.0 0.0 0.0 world odom 10" />
+    <node pkg="tf" type="static_transform_publisher" name="fcu_to_odom" args="0.0 0.0 0.0 0.0 0.0 0.0 odom fcu 10" />
+    <node pkg="tf" type="static_transform_publisher" name="base_link_to_odom" args="0.0 0.0 0.0 0.0 0.0 0.0 odom base_link 10" />
+
+    <!-- Should move converter node to GCS side-->
+    <node name="gps_pose_vel_to_odom"  pkg="beginner_tutorials" type="odometry_pose.py" args="50 odom fcu"  output="screen" >
+       <remap from="/sub_pose" to="/imu_max/pose" />
+       <remap from="/sub_twist" to="/imu_max/Navvel" />
+       <remap from="/pub_odo" to="/imu_max/poseodo" />
+   </node>
 
 <!--   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find using_markers)/launch/max_thesis.rviz" /> -->
 
